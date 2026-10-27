@@ -30,18 +30,22 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
 .start{background:#087c3b}
 .stop{background:#a52222}
 .reset{background:#333}
+
 @media(orientation:landscape){
  header{padding:4px}
- .app{padding-left:5%;padding-right:5%}
- .display{flex-direction:row;gap:24px}
+ .app{padding-left:3%;padding-right:3%}
+ .display{display:grid;grid-template-columns:100px 1fr;gap:20px;align-items:center}
  .time{font-size:clamp(140px,48vh,300px)}
  .label{display:none}
  .status{margin:0;min-width:100px}
- .controls{padding:4px 0 10px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+ .controls{padding:4px 0 10px;display:flex;flex-direction:row;gap:12px;align-items:center}
  .row{margin:0}
- .row:first-child{grid-column:1/3}
- button{height:clamp(46px,10vh,64px)}
+ .row:first-child{position:absolute;left:3%;top:50%;transform:translateY(-50%);width:100px;display:flex;flex-direction:column;gap:8px}
+ .row:first-child button{height:48px;min-height:48px;font-size:28px;padding:0}
+ .row:not(:first-child){flex:1}
+ button{height:clamp(56px,12vh,76px)}
 }
+
 </style>
 </head>
 <body>
