@@ -51,8 +51,7 @@ header{position:relative}
 .back{position:absolute;left:0;top:50%;transform:translateY(-50%);flex:none;width:auto;height:auto;padding:8px 14px;border-radius:12px;font-size:clamp(14px,3vw,20px);letter-spacing:0;background:#222;color:#aaa}
 .menu{justify-content:center}
 .menu .choices{display:flex;flex-direction:column;gap:18px;padding:18px 0}
-.menu .choices button{flex:none;height:clamp(90px,20vh,150px);font-size:clamp(24px,6vw,40px);background:#1d3a5c}
-.menu .choices button+button{background:#087c3b}
+.menu .choices button{flex:none;height:clamp(90px,20vh,150px);font-size:clamp(24px,6vw,40px);background:none;color:#fff}
 .tdisplay{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .ttime{font-size:clamp(90px,26vw,260px);font-weight:900;line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#aaa}
 .tdisplay.running .ttime{color:#fff}
@@ -134,6 +133,14 @@ ttime.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 tdisplay.classList.toggle('running',trunning);
 tdisplay.classList.toggle('zero',tv===0);
 }
+function unlock(){
+try{
+const AC=window.AudioContext||window.webkitAudioContext;
+if(!AC)return;
+taudio=taudio||new AC();
+if(taudio.state!=='running')taudio.resume();
+}catch(e){}
+}
 function buzzer(){
 try{
 const AC=window.AudioContext||window.webkitAudioContext;
@@ -141,8 +148,8 @@ if(!AC)return;
 taudio=taudio||new AC();
 if(taudio.state==='suspended')taudio.resume();
 const osc=taudio.createOscillator(),gain=taudio.createGain();
-osc.type='sawtooth';osc.frequency.value=440;
-gain.gain.value=.3;
+osc.type='sine';osc.frequency.value=330;
+gain.gain.value=.08;
 osc.connect(gain);gain.connect(taudio.destination);
 osc.start();osc.stop(taudio.currentTime+1.5);
 }catch(e){}
@@ -169,10 +176,10 @@ trender();
 }
 $('tstart').addEventListener('click',()=>{
 if(trunning||tv===0)return;
-if(taudio&&taudio.state==='suspended')taudio.resume();
+unlock();
 trunning=true;
 tdeadline=Date.now()+tv*1000;
-tinterval=setInterval(tupdate,100);
+tinterval=setInterval(tupdate,30);
 trender();
 });
 $('tstop').addEventListener('click',()=>{
