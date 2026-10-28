@@ -59,7 +59,8 @@ header{position:relative}
 .dg{display:inline-block;width:.62em;text-align:center}
 .cl{display:inline-block;width:.3em;text-align:center}
 .tbtns{display:flex;width:100%;justify-content:center;font-size:clamp(90px,26vw,260px);margin-top:8px}
-.tbtns button{flex:none;height:clamp(40px,7vh,60px);font-size:clamp(20px,4vw,30px);padding:0;margin:0 3px;width:calc(.62em - 6px)}
+.tbtns .bg{display:flex;justify-content:center;gap:.2em;width:1.24em}
+.tbtns button{flex:none;height:clamp(40px,7vh,60px);font-size:clamp(20px,4vw,30px);padding:0;width:.5em}
 .tbtns .gap{width:.3em;flex:none}
 .tdisplay.running .ttime{color:#fff}
 .tdisplay.zero .ttime{color:#ff3434}
@@ -88,11 +89,11 @@ header{position:relative}
     <div class="tclock">
       <div class="ttime" id="ttime"><span class="dg">2</span><span class="dg">5</span><span class="cl">:</span><span class="dg">0</span><span class="dg">0</span></div>
       <div class="tbtns">
-        <button class="adjust" id="mplus" aria-label="Een minuut erbij">+</button>
-        <button class="adjust" id="mminus" aria-label="Een minuut eraf">−</button>
+        <span class="bg"><button class="adjust" id="mplus" aria-label="Een minuut erbij">+</button>
+        <button class="adjust" id="mminus" aria-label="Een minuut eraf">−</button></span>
         <span class="gap"></span>
-        <button class="adjust" id="splus" aria-label="Een seconde erbij">+</button>
-        <button class="adjust" id="sminus" aria-label="Een seconde eraf">−</button>
+        <span class="bg"><button class="adjust" id="splus" aria-label="Een seconde erbij">+</button>
+        <button class="adjust" id="sminus" aria-label="Een seconde eraf">−</button></span>
       </div>
     </div>
   </div>
