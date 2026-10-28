@@ -45,11 +45,55 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
   .controls{padding:4px 0 10px}
   .row{margin:0}
   button{height:clamp(50px,11vh,76px)}
-}</style>
+}
+[hidden]{display:none!important}
+header{position:relative}
+.back{position:absolute;left:0;top:50%;transform:translateY(-50%);flex:none;width:auto;height:auto;padding:8px 14px;border-radius:12px;font-size:clamp(14px,3vw,20px);letter-spacing:0;background:#222;color:#aaa}
+.menu{justify-content:center}
+.menu .choices{display:flex;flex-direction:column;gap:18px;padding:18px 0}
+.menu .choices button{flex:none;height:clamp(90px,20vh,150px);font-size:clamp(24px,6vw,40px);background:#1d3a5c}
+.menu .choices button+button{background:#087c3b}
+.tdisplay{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ttime{font-size:clamp(90px,26vw,260px);font-weight:900;line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#aaa}
+.tdisplay.running .ttime{color:#fff}
+.tdisplay.zero .ttime{color:#ff3434}
+.tdisplay .adjust-buttons{width:clamp(64px,12vw,88px);gap:6px}
+.tdisplay .adjust-buttons button{height:clamp(34px,6vh,56px);font-size:clamp(16px,3.5vw,24px)}
+@media(orientation:landscape){.ttime{font-size:clamp(90px,36vh,240px)}.menu .choices{flex-direction:row}.menu .choices button{height:clamp(80px,40vh,150px)}}
+</style>
 </head>
 <body>
-<main class="app" id="app">
-<header>KORFBAL · SCHOTKLOK</header>
+<main class="app menu" id="menu">
+<header>KORFBAL</header>
+<div class="choices">
+  <button id="open-timer">1. TIJDWAARNEMING</button>
+  <button id="open-shot">2. SCHOTKLOK</button>
+</div>
+</main>
+
+<main class="app" id="timer" hidden>
+<header><button class="back" data-back aria-label="Terug naar menu">‹ MENU</button>TIJDWAARNEMING</header>
+<section class="tdisplay stopped" id="tdisplay" aria-live="off">
+  <div class="counter">
+    <div class="adjust-buttons">
+      <button class="adjust" id="t25">25:00</button>
+      <button class="adjust" id="t10">10:00</button>
+      <button class="adjust" id="tplus" aria-label="Een minuut erbij">+</button>
+      <button class="adjust" id="tminus" aria-label="Een minuut eraf">−</button>
+    </div>
+    <div class="ttime" id="ttime">25:00</div>
+  </div>
+</section>
+<section class="controls">
+  <div class="row">
+    <button class="start" id="tstart">START</button>
+    <button class="stop" id="tstop">STOP</button>
+  </div>
+</section>
+</main>
+
+<main class="app" id="shotclock" hidden>
+<header><button class="back" data-back aria-label="Terug naar menu">‹ MENU</button>KORFBAL · SCHOTKLOK</header>
 
 <section class="display stopped" id="display" aria-live="off">
 
@@ -75,6 +119,73 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
 </section>
 </main>
 <script>
+(()=>{
+const $=id=>document.getElementById(id);
+const show=id=>{['menu','timer','shotclock'].forEach(s=>$(s).hidden=s!==id)};
+$('open-timer').addEventListener('click',()=>show('timer'));
+$('open-shot').addEventListener('click',()=>show('shotclock'));
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>location.reload()));
+
+let tv=25*60,trunning=false,tdeadline=0,tinterval=null,taudio=null;
+const ttime=$('ttime'),tdisplay=$('tdisplay');
+function trender(){
+const m=Math.floor(tv/60),s=tv%60;
+ttime.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+tdisplay.classList.toggle('running',trunning);
+tdisplay.classList.toggle('zero',tv===0);
+}
+function buzzer(){
+try{
+const AC=window.AudioContext||window.webkitAudioContext;
+if(!AC)return;
+taudio=taudio||new AC();
+if(taudio.state==='suspended')taudio.resume();
+const osc=taudio.createOscillator(),gain=taudio.createGain();
+osc.type='sawtooth';osc.frequency.value=440;
+gain.gain.value=.3;
+osc.connect(gain);gain.connect(taudio.destination);
+osc.start();osc.stop(taudio.currentTime+1.5);
+}catch(e){}
+if(navigator.vibrate)navigator.vibrate([400,150,400]);
+}
+function tupdate(){
+if(!trunning)return;
+const remaining=Math.max(0,tdeadline-Date.now());
+tv=Math.ceil(remaining/1000);
+if(remaining<=0){
+trunning=false;tv=0;
+clearInterval(tinterval);tinterval=null;
+trender();buzzer();return;
+}
+trender();
+}
+function tset(v){
+tv=Math.max(0,Math.min(99*60+59,v));
+if(trunning){
+if(tv===0){tupdate();trunning=false;clearInterval(tinterval);tinterval=null;trender();buzzer();return}
+tdeadline=Date.now()+tv*1000;
+}
+trender();
+}
+$('tstart').addEventListener('click',()=>{
+if(trunning||tv===0)return;
+if(taudio&&taudio.state==='suspended')taudio.resume();
+trunning=true;
+tdeadline=Date.now()+tv*1000;
+tinterval=setInterval(tupdate,100);
+trender();
+});
+$('tstop').addEventListener('click',()=>{
+if(trunning){tupdate();trunning=false;clearInterval(tinterval);tinterval=null}
+trender();
+});
+$('t25').addEventListener('click',()=>tset(25*60));
+$('t10').addEventListener('click',()=>tset(10*60));
+$('tplus').addEventListener('click',()=>{tupdate();tset(tv+60)});
+$('tminus').addEventListener('click',()=>{tupdate();if(tv>=60)tset(tv-60)});
+document.addEventListener('visibilitychange',()=>{if(trunning)tupdate()});
+trender();
+})();
 (()=>{
 const MAX=25,MIN=1;
 let value=MAX,running=false,deadline=0,interval=null,audio=null;
