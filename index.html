@@ -48,7 +48,6 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
     justify-content:center;
     align-items:center;
     gap:24px;
-    padding-left:110px;
   }
 
   .time{
@@ -77,11 +76,11 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
     margin:0;
   }
 
+  /* kleine - en + links naast de timer */
   .row:first-child{
     position:absolute;
     left:0;
-    top:50%;
-    transform:translateY(-50%);
+    top:-245px;
     width:90px;
     display:flex;
     flex-direction:column;
@@ -103,6 +102,7 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
     height:clamp(56px,12vh,76px);
   }
 }
+  
 </style>
 </head>
 <body>
