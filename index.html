@@ -54,11 +54,18 @@ header{position:relative}
 .menu .choices button{flex:none;height:clamp(90px,20vh,150px);font-size:clamp(24px,6vw,40px);background:none;color:#fff}
 .tdisplay{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .ttime{font-size:clamp(90px,26vw,260px);font-weight:900;line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#aaa}
+.tclock{display:flex;flex-direction:column;align-items:center}
+.ttime{display:flex}
+.dg{display:inline-block;width:.62em;text-align:center}
+.cl{display:inline-block;width:.3em;text-align:center}
+.tbtns{display:flex;width:100%;justify-content:center;font-size:clamp(90px,26vw,260px);margin-top:8px}
+.tbtns button{flex:none;height:clamp(40px,7vh,60px);font-size:clamp(20px,4vw,30px);padding:0;margin:0 3px;width:calc(.62em - 6px)}
+.tbtns .gap{width:.3em;flex:none}
 .tdisplay.running .ttime{color:#fff}
 .tdisplay.zero .ttime{color:#ff3434}
 .tdisplay .adjust-buttons{width:clamp(64px,12vw,88px);gap:6px}
 .tdisplay .adjust-buttons button{height:clamp(34px,6vh,56px);font-size:clamp(16px,3.5vw,24px)}
-@media(orientation:landscape){.ttime{font-size:clamp(90px,36vh,240px)}.menu .choices{flex-direction:row}.menu .choices button{height:clamp(80px,40vh,150px)}}
+@media(orientation:landscape){.ttime,.tbtns{font-size:clamp(90px,36vh,240px)}.menu .choices button{height:clamp(70px,28vh,130px)}}
 </style>
 </head>
 <body>
@@ -77,10 +84,17 @@ header{position:relative}
     <div class="adjust-buttons">
       <button class="adjust" id="t25">25:00</button>
       <button class="adjust" id="t10">10:00</button>
-      <button class="adjust" id="tplus" aria-label="Een minuut erbij">+</button>
-      <button class="adjust" id="tminus" aria-label="Een minuut eraf">−</button>
     </div>
-    <div class="ttime" id="ttime">25:00</div>
+    <div class="tclock">
+      <div class="ttime" id="ttime"><span class="dg">2</span><span class="dg">5</span><span class="cl">:</span><span class="dg">0</span><span class="dg">0</span></div>
+      <div class="tbtns">
+        <button class="adjust" id="mplus" aria-label="Een minuut erbij">+</button>
+        <button class="adjust" id="mminus" aria-label="Een minuut eraf">−</button>
+        <span class="gap"></span>
+        <button class="adjust" id="splus" aria-label="Een seconde erbij">+</button>
+        <button class="adjust" id="sminus" aria-label="Een seconde eraf">−</button>
+      </div>
+    </div>
   </div>
 </section>
 <section class="controls">
@@ -129,7 +143,8 @@ let tv=25*60,trunning=false,tdeadline=0,tinterval=null,taudio=null;
 const ttime=$('ttime'),tdisplay=$('tdisplay');
 function trender(){
 const m=Math.floor(tv/60),s=tv%60;
-ttime.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+const d=String(m).padStart(2,'0')+String(s).padStart(2,'0'),n=ttime.querySelectorAll('.dg');
+for(let i=0;i<4;i++)n[i].textContent=d[i];
 tdisplay.classList.toggle('running',trunning);
 tdisplay.classList.toggle('zero',tv===0);
 }
@@ -148,8 +163,8 @@ if(!AC)return;
 taudio=taudio||new AC();
 if(taudio.state==='suspended')taudio.resume();
 const osc=taudio.createOscillator(),gain=taudio.createGain();
-osc.type='sine';osc.frequency.value=330;
-gain.gain.value=.08;
+osc.type='sawtooth';osc.frequency.value=150;
+gain.gain.value=.3;
 osc.connect(gain);gain.connect(taudio.destination);
 osc.start();osc.stop(taudio.currentTime+1.5);
 }catch(e){}
@@ -188,8 +203,12 @@ trender();
 });
 $('t25').addEventListener('click',()=>tset(25*60));
 $('t10').addEventListener('click',()=>tset(10*60));
-$('tplus').addEventListener('click',()=>{tupdate();tset(tv+60)});
-$('tminus').addEventListener('click',()=>{tupdate();if(tv>=60)tset(tv-60)});
+const adj=f=>()=>{tupdate();let m=Math.floor(tv/60),s=tv%60;[m,s]=f(m,s)||[m,s];tset(m*60+s)};
+$('mplus').addEventListener('click',adj((m,s)=>[(m+1)%100,s]));
+$('mminus').addEventListener('click',adj((m,s)=>[(m+99)%100,s]));
+$('splus').addEventListener('click',adj((m,s)=>{if(m===99&&s===59)return;return s===59?[m+1,0]:[m,s+1]}));
+$('sminus').addEventListener('click',adj((m,s)=>{if(m===0&&s===0)return;return s===0?[m-1,59]:[m,s-1]}));
+
 document.addEventListener('visibilitychange',()=>{if(trunning)tupdate()});
 trender();
 })();
