@@ -108,23 +108,31 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
 <body>
 <main class="app" id="app">
 <header>KORFBAL · SCHOTKLOK</header>
+
 <section class="display stopped" id="display" aria-live="off">
-<div class="time" id="time">25</div>
-<div>
-<div class="label">SECONDEN</div>
-<div class="status" id="status">GESTOPT</div>
-</div>
+
+  <div class="adjust-buttons">
+    <button class="adjust" id="minus" aria-label="Een seconde eraf">−</button>
+    <button class="adjust" id="plus" aria-label="Een seconde erbij">+</button>
+  </div>
+
+  <div class="time" id="time">25</div>
+
+  <div>
+    <div class="label">SECONDEN</div>
+    <div class="status" id="status">GESTOPT</div>
+  </div>
+
 </section>
+
 <section class="controls">
-<div class="row">
-<button class="adjust" id="minus" aria-label="Een seconde eraf">−</button>
-<button class="adjust" id="plus" aria-label="Een seconde erbij">+</button>
-</div>
-<div class="row">
-<button class="start" id="start">START</button>
-<button class="stop" id="stop">STOP</button>
-<button class="reset" id="reset">RESET</button>
-</div>
+
+  <div class="row">
+    <button class="start" id="start">START</button>
+    <button class="stop" id="stop">STOP</button>
+    <button class="reset" id="reset">RESET</button>
+  </div>
+
 </section>
 </main>
 <script>
