@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -26,84 +26,26 @@ header{text-align:center;padding:12px 0;font-size:clamp(16px,3vw,24px);font-weig
 .row{display:flex;gap:12px;margin-top:12px}
 button{border:0;border-radius:16px;min-width:0;flex:1;height:clamp(58px,10vh,82px);font-size:clamp(20px,5vw,30px);font-weight:900;color:#fff;background:#292929;touch-action:manipulation;user-select:none}
 button:active{filter:brightness(1.35);transform:scale(.98)}
-.adjust{font-size:clamp(36px,8vw,52px);background:#222}
+.adjust{background:#222}
 .start{background:#087c3b}
 .stop{background:#a52222}
 .reset{background:#333}
 
+.counter{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
+.adjust-buttons{display:flex;flex-direction:column;gap:8px;flex:none;width:clamp(48px,10vw,72px)}
+.adjust-buttons button{flex:none;height:clamp(44px,8vh,64px);font-size:clamp(26px,5vw,36px);padding:0}
+.label{display:none}
+.status{margin-top:12px}
+
 @media(orientation:landscape){
-  header{
-    padding:4px;
-  }
-
-  .app{
-    padding-left:3%;
-    padding-right:3%;
-  }
-
-  .display{
-    position:relative;
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    align-items:center;
-    gap:24px;
-  }
-
-  .time{
-    font-size:clamp(140px,48vh,300px);
-  }
-
-  .label{
-    display:none;
-  }
-
-  .status{
-    margin:0;
-    min-width:100px;
-  }
-
-  .controls{
-    padding:4px 0 10px;
-    display:flex;
-    flex-direction:row;
-    gap:12px;
-    align-items:center;
-    position:relative;
-  }
-
-  .row{
-    margin:0;
-  }
-
-  /* kleine - en + links naast de timer */
-  .row:first-child{
-    position:absolute;
-    left:0;
-    top:-200px;
-    width:90px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-
-  .row:first-child button{
-    height:48px;
-    min-height:48px;
-    font-size:28px;
-    padding:0;
-  }
-
-  .row:not(:first-child){
-    flex:1;
-  }
-
-  button{
-    height:clamp(56px,12vh,76px);
-  }
-}
-  
-</style>
+  header{padding:4px}
+  .app{padding-left:3%;padding-right:3%}
+  .time{font-size:clamp(120px,42vh,300px)}
+  .status{margin-top:6px}
+  .controls{padding:4px 0 10px}
+  .row{margin:0}
+  button{height:clamp(50px,11vh,76px)}
+}</style>
 </head>
 <body>
 <main class="app" id="app">
@@ -111,20 +53,17 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
 
 <section class="display stopped" id="display" aria-live="off">
 
-  <div class="adjust-buttons">
-    <button class="adjust" id="minus" aria-label="Een seconde eraf">−</button>
-    <button class="adjust" id="plus" aria-label="Een seconde erbij">+</button>
+  <div class="counter">
+    <div class="adjust-buttons">
+      <button class="adjust" id="plus" aria-label="Een seconde erbij">+</button>
+      <button class="adjust" id="minus" aria-label="Een seconde eraf">−</button>
+    </div>
+    <div class="time" id="time">25</div>
   </div>
 
-  <div class="time" id="time">25</div>
-
-  <div>
-    <div class="label">SECONDEN</div>
-    <div class="status" id="status">GESTOPT</div>
-  </div>
+  <div class="status" id="status">GESTOPT</div>
 
 </section>
-
 <section class="controls">
 
   <div class="row">
