@@ -37,7 +37,18 @@ button:active{filter:brightness(1.35);transform:scale(.98)}
 .label{display:none}
 .status{margin-top:12px}
 
-@media(orientation:landscape){
+.sgrid{flex:1;min-height:0;display:grid;grid-template-columns:1.2fr 1fr 1.2fr;grid-template-rows:1fr 1fr;gap:8px;padding:0 0 12px}
+.sgrid button{height:auto;font-size:clamp(20px,5vw,34px);border-radius:6px}
+.stime{grid-column:1;grid-row:1;display:flex;align-items:center;justify-content:center;background:#1c2330;border-radius:6px;min-width:0}
+.stime .time{font-size:clamp(70px,20vw,200px);line-height:1;letter-spacing:-.04em}
+.smid{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;gap:8px}
+.smid button{flex:1;height:auto;font-size:clamp(36px,9vw,64px)}
+.sgrid .start{grid-column:1;grid-row:2}
+.sgrid .start.is-stop{background:#a52222}
+.sgrid .sreset{grid-column:3;background:#7a1c24}
+.sgrid #reset{grid-row:1}
+.sgrid #reset2{grid-row:2}
+.sgrid.zero .stime .time{color:#ff3434}@media(orientation:landscape){
   header{padding:4px}
   .app{padding-left:3%;padding-right:3%}
   .time{font-size:clamp(120px,42vh,300px)}
@@ -79,7 +90,7 @@ header{position:relative}
 #timer header{letter-spacing:2px;font-size:clamp(13px,3vw,20px);padding-left:90px;padding-right:90px;white-space:nowrap}
 .tdisplay.running .ttime{color:#fff}
 .tdisplay.zero .ttime{color:#ff3434}
-@media(orientation:landscape){.tclock{--f:clamp(48px,20vh,110px)}.menu .choices button{height:clamp(70px,28vh,130px)}.score{font-size:clamp(60px,30vh,160px)}.tdisplay{padding-bottom:6px}}</style>
+media(orientation:landscape){.tclock{--f:clamp(48px,20vh,110px)}.menu .choices button{height:clamp(70px,28vh,130px)}.score{font-size:clamp(60px,30vh,160px)}.tdisplay{padding-bottom:6px}}</style>
 </head>
 <body>
 <main class="app menu" id="menu">
@@ -129,29 +140,16 @@ header{position:relative}
 <main class="app" id="shotclock" hidden>
 <header><button class="back" data-back aria-label="Terug naar menu">‹</button>SCHOTKLOK</header>
 
-<section class="display stopped" id="display" aria-live="off">
-
-  <div class="counter">
-    <div class="adjust-buttons">
-      <button class="adjust" id="plus" aria-label="Een seconde erbij">+</button>
-      <button class="adjust" id="minus" aria-label="Een seconde eraf">−</button>
-    </div>
-    <div class="time" id="time">25</div>
+<section class="sgrid stopped" id="display" aria-live="off">
+  <div class="stime"><div class="time" id="time">25</div></div>
+  <div class="smid">
+    <button class="adjust" id="plus" aria-label="Een seconde erbij">+</button>
+    <button class="adjust" id="minus" aria-label="Een seconde eraf">−</button>
   </div>
-
-  <div class="status" id="status">GESTOPT</div>
-
-</section>
-<section class="controls">
-
-  <div class="row">
-    <button class="start" id="start">START</button>
-    <button class="stop" id="stop">STOP</button>
-    <button class="reset" id="reset">RESET</button>
-  </div>
-
-</section>
-</main>
+  <button class="sreset" id="reset" aria-label="Reset naar 25">RESET<br>25</button>
+  <button class="start" id="start">START</button>
+  <button class="sreset" id="reset2" aria-label="Reset naar 25">RESET<br>25</button>
+</section></main>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
@@ -248,14 +246,15 @@ const MAX=25,MIN=1;
 let value=MAX,running=false,deadline=0,interval=null,audio=null;
 const time=document.getElementById('time');
 const display=document.getElementById('display');
-const status=document.getElementById('status');
+const sbtn=document.getElementById('start');
 
 function render(){
 time.textContent=value;
 display.classList.toggle('running',running);
 display.classList.toggle('stopped',!running&&value>0);
 display.classList.toggle('zero',value===0);
-status.textContent=value===0?'TIJD VERSTREKEN':running?'LOPEND':'GESTOPT';
+sbtn.textContent=running?'STOP':'START';
+sbtn.classList.toggle('is-stop',running);
 }
 function sound(){
 try{
@@ -325,9 +324,9 @@ value=value<=MIN?MAX:value-1;
 if(running)deadline=Date.now()+value*1000;
 render();
 }
-document.getElementById('start').addEventListener('click',start);
-document.getElementById('stop').addEventListener('click',stop);
+sbtn.addEventListener('click',()=>running?stop():start());
 document.getElementById('reset').addEventListener('click',reset);
+document.getElementById('reset2').addEventListener('click',reset);
 document.getElementById('plus').addEventListener('click',plus);
 document.getElementById('minus').addEventListener('click',minus);
 document.addEventListener('visibilitychange',()=>{if(running)update()});
