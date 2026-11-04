@@ -108,6 +108,7 @@ header{position:relative}
   <div class="presets">
     <button class="adjust" id="t25">25:00</button>
     <button class="adjust" id="t10">10:00</button>
+    <button class="reset" id="treset">RESET</button>
   </div>
   <div class="tclock">
     <div class="ttime" id="ttime"><span class="dg">2</span><span class="dg">5</span><span class="cl">:</span><span class="dg">0</span><span class="dg">0</span></div>
@@ -230,7 +231,8 @@ const goal=(k,d)=>{sc[k]=Math.max(0,Math.min(99,sc[k]+d));$('score-'+k).textCont
 $(k+'-plus').addEventListener('click',()=>goal(k,1));
 $(k+'-minus').addEventListener('click',()=>goal(k,-1));
 $('name-'+k).addEventListener('click',()=>{const n=prompt('Teamnaam',$('name-'+k).textContent);if(n&&n.trim())$('name-'+k).textContent=n.trim().toUpperCase()});
-});$('t25').addEventListener('click',()=>tset(25*60));
+});$('treset').addEventListener('click',()=>{tstop();tset(25*60);['home','guest'].forEach(k=>{sc[k]=0;$('score-'+k).textContent=0})});
+$('t25').addEventListener('click',()=>tset(25*60));
 $('t10').addEventListener('click',()=>tset(10*60));
 const adj=f=>()=>{tupdate();let m=Math.floor(tv/60),s=tv%60;[m,s]=f(m,s)||[m,s];tset(m*60+s)};
 $('mplus').addEventListener('click',adj((m,s)=>[(m+1)%100,s]));
