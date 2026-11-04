@@ -231,7 +231,7 @@ const goal=(k,d)=>{sc[k]=Math.max(0,Math.min(99,sc[k]+d));$('score-'+k).textCont
 $(k+'-plus').addEventListener('click',()=>goal(k,1));
 $(k+'-minus').addEventListener('click',()=>goal(k,-1));
 $('name-'+k).addEventListener('click',()=>{const n=prompt('Teamnaam',$('name-'+k).textContent);if(n&&n.trim())$('name-'+k).textContent=n.trim().toUpperCase()});
-});$('treset').addEventListener('click',()=>{tstop();tset(25*60);['home','guest'].forEach(k=>{sc[k]=0;$('score-'+k).textContent=0})});
+});$('treset').addEventListener('click',()=>{if(!confirm('Score en tijd resetten?'))return;tstop();tset(25*60);['home','guest'].forEach(k=>{sc[k]=0;$('score-'+k).textContent=0})});
 $('t25').addEventListener('click',()=>tset(25*60));
 $('t10').addEventListener('click',()=>tset(10*60));
 const adj=f=>()=>{tupdate();let m=Math.floor(tv/60),s=tv%60;[m,s]=f(m,s)||[m,s];tset(m*60+s)};
